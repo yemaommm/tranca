@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mapper namespace="order">
+    <string id="findusergoodsorder">
+    	SELECT * FROM i_goods_activityorder WHERE uid = ? AND activityid = ? LIMIT 1
+    </string>
+
+    <string id="orderlist">
+    	SELECT * FROM i_goods_activityorder WHERE uid = ? AND type = ? ORDER BY createtime DESC LIMIT ?, ?
+    </string>
+
+    <string id="adminorderlist">
+    	SELECT
+			a.*, c.nickname, c.headimgurl,
+			b.name AS goodsname, b.imgurl AS goodsimg
+		FROM i_goods_activityorder a
+		LEFT JOIN i_goods_activity b ON a.activityid = b.id
+		LEFT JOIN i_wap_user c ON c.id = a.uid %s
+		ORDER BY a.createtime DESC
+		LIMIT ?, ?
+    </string>
+    <string id="adminorderlisttotal">
+    	SELECT
+			COUNT(1) AS total
+		FROM i_goods_activityorder a
+		LEFT JOIN i_goods_activity b ON a.activityid = b.id
+		LEFT JOIN i_wap_user c ON c.id = a.uid %s
+    </string>
+    <string id="finishorder">
+        UPDATE i_goods_activityorder SET 
+            pay = 1, status = 1, pay_time = UNIX_TIMESTAMP(),
+            pay_type = ?, pay_price = ?
+        WHERE activity_no = ? AND pay = 0 AND status = 0
+    </string>
+
+    <string id="clearbuyorder">
+        DELETE
+        FROM i_goods_activityorder
+        WHERE type = 1
+        AND `status` = 0
+        AND createtime &lt; UNIX_TIMESTAMP() - 10800
+        AND uid = ?
+    </string>
+</mapper>

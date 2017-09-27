@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mapper namespace="user">
+    <string id="finduserinfo">
+        SELECT 
+        	a.*, b.truename, b.mail, b.company, b.position, b.weixin,
+        	b.about, b.profession, b.address, c.*
+        FROM i_wap_user a 
+        LEFT JOIN i_wap_userinfo b ON a.id = b.uid 
+        LEFT JOIN i_wap_auth c ON a.id = c.uid
+        WHERE id = ?
+    </string>
+
+    <string id="favoritelist">
+    	SELECT
+			b.*
+		FROM
+			i_user_favorite a
+		LEFT JOIN i_goods_activity b ON a.gid = b.id
+		WHERE a.uid = ? AND b.type = ?
+		LIMIT ?, ?
+    </string>
+    <string id="favoritetotal">
+    	SELECT
+			COUNT(1) AS n
+		FROM
+			i_user_favorite a
+		LEFT JOIN i_goods_activity b ON a.gid = b.id
+		WHERE a.uid = ? AND b.type = ?
+    </string>
+
+    <string id="finduserlist">
+        Select
+            a.*, b.*, c.*, a.createtime AS usercreatetime
+        from i_wap_user a 
+        LEFT JOIN i_wap_userinfo b ON a.id = b.uid 
+        LEFT JOIN i_wap_auth c ON a.id = c.uid %s 
+        ORDER BY IFNULL(c.status, 99), a.createtime DESC Limit ?,?
+    </string>
+
+
+    <string id="finduserauthinfo">
+        Select * from i_wap_user a 
+        LEFT JOIN i_wap_userinfo b ON a.id = b.uid 
+        LEFT JOIN i_wap_auth c ON a.id = c.uid %s 
+        ORDER BY a.createtime DESC Limit 1
+    </string>
+
+    <string id="findfeedbacklist">
+        SELECT a.*, b.nickname FROM i_wap_feedback a 
+        LEFT JOIN i_wap_user b ON a.uid = b.id 
+        %s
+        ORDER BY a.createtime DESC
+        LIMIT ?, ? 
+    </string>
+
+</mapper>

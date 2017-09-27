@@ -1,0 +1,346 @@
+{% extends "tranca/admin/base/base.html" %}
+
+{% block body %}
+<div>
+    <div class="page-header"><h1>订单管理</h1></div>
+    <div style="margin-bottom: 20px;width: 500px;display: none;" class="form-horizontal searchdiv">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">产品名称：</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="searchproductname" >
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="lastname" class="col-sm-3 control-label">订单状态：</label>
+            <div class="col-sm-9">
+                <select class="form-control" id="searchtype" >
+                    <option value="-1">全部</option>
+                    <option value="1">待付款</option>
+                    <option value="2">已付款</option>
+                    <option value="2">待审核</option>
+                    <option value="3">已审核</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">用户名：</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="searchusername" >
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">订单号：</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="searchorderid" >
+            </div>
+        </div>
+        <input type="button" class="btn btn-primary searchbutton" value="搜索">
+        <script src="//cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+        <script>
+            $('#searchproductname').val($.cookie("order:searchproductname"));
+            $('#searchorderid').val($.cookie("order:searchorderid"));
+            $('#searchusername').val($.cookie("order:searchusername"));
+            $('#searchtype').val($.cookie("order:searchtype"));
+            $('.searchbutton').click(function(event) {
+                $.cookie("order:searchproductname", $('#searchproductname').val());
+                $.cookie("order:searchorderid", $('#searchorderid').val()==null?"-1":$('#searchorderid').val());
+                $.cookie("order:searchusername", $('#searchusername').val()==null?"-1":$('#searchusername').val());
+                $.cookie("order:searchtype", $('#searchtype').val()==null?"-1":$('#searchtype').val());
+
+                window.location.href = window.location.href.split("?")[0];
+            });
+            function clearsearch(){
+                $.cookie("order:searchproductname", "");
+                $.cookie("order:searchorderid", "");
+                $.cookie("order:searchusername", "");
+                $.cookie("order:searchtype", "-1");
+
+                window.location.href = window.location.href.split('?')[0];
+            }
+        </script>
+    </div>
+    <div style="margin-bottom: 20px;">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addorder">添加订单</button>
+        <button type="button" onclick="$('.searchdiv').slideToggle()" class="btn btn-primary" >搜索栏</button>
+        <button type="button" onclick="clearsearch();" class="btn btn-primary" >全部订单</button>
+    </div>
+    <div>
+        <table class="table table-bordered table-hover">
+           <thead>
+              <tr>
+                <th style="awidth: 50px;">订单ID</th>
+                 <th>产品名称</th>
+                 <th>购买用户</th>
+                 <th>公司名称</th>
+                 <th>价格</th>
+                 <th>状态</th>
+                 <th width="240">创建时间</th>
+                 <th>操作</th>
+              </tr>
+           </thead>
+           <tbody>
+            {% for j in orders sorted %}
+              <tr>
+                <td>{{ j.order_info_id }}</td>
+                 <td>{{ j.product_name }}</td>
+                 <td>{% if j.username == "" %}后台{% else %}{{ j.username }}{% endif %}</td>
+                 <td>{{ j.company }}</td>
+                <td><b>{{ j.price }}</b></td>
+                <td>{% if j.flow == "1" %}待付款{% elif j.flow == "2" %}已付款{% elif j.flow == "3" %}已审核{% endif %}</td>
+                 <td>{{ todate(j.createtime) }}</td>
+                 <td width="250">
+                     <!-- <button class="btn btn-info info" link="/admin/order/info/{{ j.order_info_id }}">查看订单</button> -->
+                     <button class="btn btn-info update" link="/admin/order/info/{{ j.order_info_id }}">修改</button>
+                     <button class="btn btn-danger delclass" link="/admin/order/del/{{ j.order_info_id }}">删除</button>
+                 </td>
+              </tr>
+            {% endfor %}
+           </tbody>
+        </table>
+    </div>
+    <div id="mypage"></div>
+</div>
+
+            <form class="form-horizontal" id="addform" role="form" action="/admin/order/add" method="post" enctype ="multipart/form-data" runat="server">
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="addorder" tabindex="-1" role="dialog" 
+   aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog" style="width: 90%">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" 
+               data-dismiss="modal" aria-hidden="true">
+                  &times;
+            </button>
+            <h4 class="modal-title" id="uLabel">
+               添加订单
+            </h4>
+         </div>
+         <div class="modal-body">
+               <div class="form-group" style="text-align: center;" id="catimg">
+                    
+               </div>
+               <!-- <div class="form-group">
+                  <label for="bar" class="col-sm-3 control-label">订单ID：</label>
+                  <div class="col-sm-9">
+                     <input type="text" class="form-control" id="uorderid" name="order_info_id" readonly="readonly" >
+                  </div>
+               </div> -->
+                <div class="form-group">
+                    <label  class="col-sm-3 control-label">产品：</label>
+                    <div class="col-sm-9">
+                        <select class="form-control" name="product_id" >
+                        {% for j in products sorted %}
+                            <option value="{{ j.product_id }}">{{ j.name }}</option>
+                        {% endfor %}
+                        </select>
+                    </div>
+                </div>
+               <div class="form-group">
+                  <label for="firstname" class="col-sm-3 control-label">联系电话：</label>
+                  <div class="col-sm-9">
+                     <input type="text" class="form-control" name="phone"
+                        placeholder="请输入联系电话" required>
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label for="firstname" class="col-sm-3 control-label">邮箱：</label>
+                  <div class="col-sm-9">
+                     <input type="text" class="form-control" name="mail"
+                        placeholder="请输入邮箱" required>
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label for="firstname" class="col-sm-3 control-label">公司名称：</label>
+                  <div class="col-sm-9">
+                     <input type="text" class="form-control" name="company"
+                        placeholder="请输入公司名称" required>
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label for="firstname" class="col-sm-3 control-label">营业执照：</label>
+                  <div class="col-sm-9" id="adddivbusiness_licence" onclick="$('#addfilebusiness_licence').click();">
+                     <img src="/admin/image/icon_add.png" style="width: 30%;" alt="" id="addbusiness_licence">
+                  </div>
+                  <input type="file" onchange="previewImage(this, 'adddivbusiness_licence', 0, 0)" style="display: none;" name="business_licence" id="addfilebusiness_licence">
+               </div>
+               <div class="form-group">
+                  <label for="firstname" class="col-sm-3 control-label">税务登记证：</label>
+                  <div class="col-sm-9" id="adddivtax_registration_certificate" onclick="$('#addfiletax_registration_certificate').click();">
+                     <img src="/admin/image/icon_add.png" style="width: 30%;" alt="" id="addtax_registration_certificate">
+                  </div>
+                  <input type="file" onchange="previewImage(this, 'adddivtax_registration_certificate', 0, 0)" style="display: none;" name="tax_registration_certificate" id="addfiletax_registration_certificate">
+               </div>
+               <div class="form-group">
+                  <label for="firstname" class="col-sm-3 control-label">组织机构代码证：</label>
+                  <div class="col-sm-9" id="adddivOrganization_Code_Certificate" onclick="$('#addfileOrganization_Code_Certificate').click();">
+                     <img src="/admin/image/icon_add.png" style="width: 30%;" alt="" id="addOrganization_Code_Certificate">
+                  </div>
+                  <input type="file" onchange="previewImage(this, 'adddivOrganization_Code_Certificate', 0, 0)" style="display: none;" name="Organization_Code_Certificate" id="addfileOrganization_Code_Certificate">
+               </div>
+                <div class="form-group">
+                    <label for="lastname" class="col-sm-3 control-label">订单状态：</label>
+                    <div class="col-sm-9">
+                        <select class="form-control" id="utype" name="flow" >
+                            <option value="1">待付款</option>
+                            <option value="2">已付款</option>
+                            <option value="3">已审核</option>
+                        </select>
+                    </div>
+                </div>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-default" 
+               data-dismiss="modal">关闭
+            </button>
+            <input type="submit" class="btn btn-primary" onclick="" value="添加">
+         </div>
+      </div><!-- /.modal-content -->
+    </div>
+</div><!-- /.modal -->
+        </form>
+
+            <form class="form-horizontal" id="uf" role="form" action="" method="post" enctype ="multipart/form-data" runat="server">
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="update" tabindex="-1" role="dialog" 
+   aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog" style="width: 90%">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" 
+               data-dismiss="modal" aria-hidden="true">
+                  &times;
+            </button>
+            <h4 class="modal-title" id="uLabel">
+               修改订单
+            </h4>
+         </div>
+         <div class="modal-body">
+               <div class="form-group" style="text-align: center;" id="catimg">
+                    
+               </div>
+               <div class="form-group">
+                  <label for="bar" class="col-sm-3 control-label">订单ID：</label>
+                  <div class="col-sm-9">
+                     <input type="text" class="form-control" id="uorderid" name="order_info_id" readonly="readonly" >
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label for="firstname" class="col-sm-3 control-label">产品名称：</label>
+                  <div class="col-sm-9">
+                     <input type="text" class="form-control" id="uname" name="product_name"
+                        placeholder="请输入分类名称" readonly="readonly" required>
+                  </div>
+               </div>
+                <div class="form-group">
+                  <label class="col-sm-3 control-label">价格：</label>
+                  <div class="col-sm-9">
+                     <input type="text" class="form-control" id="upprice" name="price" onkeyup="checkNum(this)" required>
+                  </div>
+                </div>
+               <div class="form-group">
+                  <label for="firstname" class="col-sm-3 control-label">联系电话：</label>
+                  <div class="col-sm-9">
+                     <input type="text" class="form-control" id="uphone" name="phone"
+                        placeholder="请输入联系电话" required>
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label for="firstname" class="col-sm-3 control-label">邮箱：</label>
+                  <div class="col-sm-9">
+                     <input type="text" class="form-control" id="umail" name="mail"
+                        placeholder="请输入邮箱" required>
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label for="firstname" class="col-sm-3 control-label">公司名称：</label>
+                  <div class="col-sm-9">
+                     <input type="text" class="form-control" id="ucompany" name="company"
+                        placeholder="请输入公司名称" required>
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label for="firstname" class="col-sm-3 control-label">营业执照：</label>
+                  <div class="col-sm-9" id="divbusiness_licence" onclick="$('#filebusiness_licence').click();">
+                     <img src="" style="width: 50%;" alt="" id="business_licence">
+                  </div>
+                  <input type="file" onchange="previewImage(this, 'divbusiness_licence', 0, 0)" style="display: none;" name="business_licence" id="filebusiness_licence">
+               </div>
+               <div class="form-group">
+                  <label for="firstname" class="col-sm-3 control-label">税务登记证：</label>
+                  <div class="col-sm-9" id="divtax_registration_certificate" onclick="$('#filetax_registration_certificate').click();">
+                     <img src="" style="width: 50%;" alt="" id="tax_registration_certificate">
+                  </div>
+                  <input type="file" onchange="previewImage(this, 'divtax_registration_certificate', 0, 0)" style="display: none;" name="tax_registration_certificate" id="filetax_registration_certificate">
+               </div>
+               <div class="form-group">
+                  <label for="firstname" class="col-sm-3 control-label">组织机构代码证：</label>
+                  <div class="col-sm-9" id="divOrganization_Code_Certificate" onclick="$('#fileOrganization_Code_Certificate').click();">
+                     <img src="" style="width: 50%;" alt="" id="Organization_Code_Certificate">
+                  </div>
+                  <input type="file" onchange="previewImage(this, 'divOrganization_Code_Certificate', 0, 0)" style="display: none;" name="Organization_Code_Certificate" id="fileOrganization_Code_Certificate">
+               </div>
+                <div class="form-group">
+                    <label for="lastname" class="col-sm-3 control-label">订单状态：</label>
+                    <div class="col-sm-9">
+                        <select class="form-control" id="utype" name="flow" >
+                            <option value="1">待付款</option>
+                            <option value="2">已付款</option>
+                            <option value="3">已审核</option>
+                        </select>
+                    </div>
+                </div>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-default" 
+               data-dismiss="modal">关闭
+            </button>
+            <input type="submit" class="btn btn-primary" onclick="" value="更新">
+         </div>
+      </div><!-- /.modal-content -->
+    </div>
+</div><!-- /.modal -->
+        </form>
+</div>
+
+<script type="text/javascript">
+    page = "tranca";
+    pclass = "tranca_order_list";
+
+    start = function(){
+        $('.delclass').click(function(){
+            if(confirm("是否确认删除")){
+                alink(this, function(data){
+                    if(data=="0"){
+                        bAlert("删除失败");
+                    }else{
+                        bAlert("删除成功");
+                        location.reload()
+                    }
+                });
+            }
+        });
+        $('.update').click(function(){
+            alink(this, function(data){
+                data = data.order;
+                // alert(data.toString());
+                $('#uf').attr('action', '/admin/order/update/'+data.order_info_id);//inventory  uprediotype0
+                $('#upprice').val(data.price)
+                $('#uname').val(data.product_name)
+                $('#uorderid').val(data.order_info_id)
+                $('#uphone').val(data.phone)
+                $('#umail').val(data.mail)
+                $('#ucompany').val(data.company)
+                $('#business_licence').attr('src', data.business_licence == ""?"/admin/image/icon_add.png":data.business_licence)
+                $('#tax_registration_certificate').attr('src', data.tax_registration_certificate == ""?"/admin/image/icon_add.png":data.tax_registration_certificate)
+                $('#Organization_Code_Certificate').attr('src', data.Organization_Code_Certificate == ""?"/admin/image/icon_add.png":data.Organization_Code_Certificate)
+
+                $('#utype').val(data.flow)
+
+                $('#update').modal();
+            });
+        });
+        ipage.create('#mypage', {{ total }}, {{ size }});
+    }
+</script>
+{% endblock %}

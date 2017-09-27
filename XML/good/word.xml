@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mapper namespace="goods.word">
+    <!-- 插入用户私信消息 -->
+    <string id="update">
+        UPDATE i_goods_word SET 列名称 = 新值 WHERE 列名称 = 某值
+    </string>
+</mapper>

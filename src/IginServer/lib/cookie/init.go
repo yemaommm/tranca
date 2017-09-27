@@ -1,0 +1,5 @@
+package cookie
+
+func init() {
+
+}

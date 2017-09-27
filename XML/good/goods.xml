@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mapper namespace="goods">
+    <string id="findgoodslist">
+        SELECT * FROM i_goods_activity WHERE del = 0 AND type = 0 ORDER BY top DESC, create_time DESC LIMIT %v, %v
+    </string>
+
+    <string id="findgoodsinfo">
+        SELECT a.*, b.name AS classname FROM i_goods_activity a LEFT JOIN i_goods_class b ON a.classid = b.id WHERE a.del = 0 AND a.id = %v LIMIT 1
+    </string>
+
+    <string id="findgoodsfavorite">
+        SELECT 1 FROM i_user_favorite WHERE uid = %v AND gid = %v AND type = 0 LIMIT 1
+    </string>
+
+    <string id="goodsfavorite">
+        INSERT INTO i_user_favorite (uid, gid, type, createtime) VALUES (?, ?, 0, UNIX_TIMESTAMP())
+    </string>
+
+    <string id="ungoodsfavorite">
+        DELETE FROM i_user_favorite WHERE uid = ? AND gid = ? AND type = 0
+    </string>
+
+    <string id="findactivitylist">
+        SELECT * FROM i_goods_activity WHERE del = 0 AND type = 1 ORDER BY top DESC, create_time DESC LIMIT %v, %v
+    </string>
+
+    <string id="findactivityinfo">
+        SELECT * FROM i_goods_activity WHERE del = 0 AND id = %v LIMIT 1
+    </string>
+
+    <string id="findactivityfavorite">
+        SELECT 1 FROM i_user_favorite WHERE uid = %v AND gid = %v AND type = 1 LIMIT 1
+    </string>
+
+    <string id="activityfavorite">
+        INSERT INTO i_user_favorite (uid, gid, type, createtime) VALUES (?, ?, 1, UNIX_TIMESTAMP())
+    </string>
+
+    <string id="unactivityfavorite">
+        DELETE FROM i_user_favorite WHERE uid = ? AND gid = ? AND type = 1
+    </string>
+
+    <string id="goodsuserinfo">
+        SELECT 
+            b.headimgurl
+        FROM i_goods_activityorder a
+        LEFT JOIN i_wap_user b ON a.uid = b.id
+        WHERE a.status = 2 AND a.activityid = ?
+        GROUP BY a.uid
+        ORDER BY a.createtime DESC
+        LIMIT ?, ?
+    </string>
+
+    <string id="goodsuserinfototal">
+        SELECT IFNULL(COUNT(1), 0) AS n FROM (
+        SELECT 
+            1
+        FROM i_goods_activityorder a
+        WHERE a.status = 2 AND a.activityid = ?
+        GROUP BY a.uid) a
+    </string>
+</mapper>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mapper namespace="tranca.order">
+
+    <string id="findAllList">
+        SELECT 
+        	a.*, b.username
+        FROM product_order_info a 
+        LEFT JOIN wap_user b
+        ON a.uid = b.uid
+        WHERE a.del = 0 %s 
+        ORDER BY a.createtime DESC LIMIT ?, ?
+    </string>
+
+</mapper>

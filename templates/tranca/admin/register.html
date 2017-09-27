@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>Signin Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/signin.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="assets/js/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <style type="text/css">
+  .alert{
+      top: 0px;
+      position: fixed;
+      width: 100%;
+  }
+  </style>
+  <body>
+    {% if msg %}
+        <div class="alert alert-warning">  <!-- alert-success   alert-warning -->
+           <a href="#" class="close" data-dismiss="alert" aria-hidden="true">
+              &times;
+           </a>
+           <strong>{{ msg }}！</strong>
+        </div>
+    {% endif %}
+    <div class="container">
+
+      <form class="form-signin" onsubmit="return register()" action="" method="post" style="max-width: 500px;">
+        <h2 class="form-signin-heading">注册</h2>
+        <table>
+          <tr>
+            <td style="width: 150px;">用户名：</td>
+            <td>
+              <label for="inputText" class="sr-only">用户名</label>
+              <input type="text" id="inputText" name="username" class="form-control" placeholder="请输入用户名" required autofocus>
+            </td>
+          </tr>
+          <tr>
+            <td>密码：</td>
+            <td>
+              <label for="inputPassword" class="sr-only">密码</label>
+              <input type="password" id="inputPassword" name="password" class="form-control" placeholder="请输入密码" required>
+            </td>
+          </tr>
+          <tr>
+            <td>确认密码：</td>
+            <td>
+              <label for="inputPassword2" class="sr-only">确认密码</label>
+              <input type="password" id="inputPassword2" name="password2" class="form-control" placeholder="请确认密码" required>
+            </td>
+          </tr>
+          <tr>
+            <td>手机号码：</td>
+            <td>
+              <label for="inputTel" class="sr-only">手机号码</label>
+              <input type="phone" id="inputTel" name="tel" class="form-control" placeholder="请输入手机号码" required>
+            </td>
+          </tr>
+        </table>
+        <div class="checkbox">
+          <label>
+          </label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">注册</button>
+        <div style="text-align: center;"><a href="/admin/login">返回</a></div>
+      </form>
+
+    </div> <!-- /container -->
+
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="assets/js/ie10-viewport-bug-workaround.js"></script>
+    <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+    function sendMsg(){
+        var num = document.getElementById('inputTel').value;
+            //var reg=/^0{0,1}(13[0-9]|145|15[0-9]|18[0-9])[0-9]{8}$/i;
+        var reg=/^0{0,1}(13[0-9]|14[0-9]|16[0-9]|17[0-9]|15[0-9]|18[0-9])[0-9]{8}$/i;
+            if( num == '' || !reg.test(num)){
+                alert('请输入正确的手机号！');
+                return false;
+            }
+        return true;
+           // if (confirm("我们会将会发送验证码到 "+num)){
+           //      jQuery(function($) {
+           //          $.ajax({
+           //              url:"/index.php?m=Users&a=test",
+           //              type:"post",
+           //              data:"sms_mp="+num,
+           //              success:function(data){
+           //                  $("#a_verify").css({"background":"#ccc","borderColor":"#ccc"});
+           //                  fun_timedown(60);
+           //                }
+           //          });
+           //      });
+           //  }
+        }
+        function register(){
+            var reg=/^[a-zA-Z\d]\w{3,11}[a-zA-Z\d]$/;
+            username = document.getElementById('inputText').value;
+            passwd = document.getElementById('inputPassword').value;
+            passwd2 = document.getElementById('inputPassword2').value;
+            tel = document.getElementById('inputTel').value;
+
+            if(!reg.test(username)){
+                alert("用户名由5-12位，字母，数字，下划线组成，不能以下划线开头和结尾");
+                return false;
+            }
+            t = sendMsg()
+            if(t){
+                if(document.getElementById('inputPassword').value!=document.getElementById('inputPassword2').value){
+                    alert("两次输入的密码不正确");
+                    return false;
+                }
+            }else{
+                return false;
+            }
+        }
+    </script>
+  </body>
+</html>

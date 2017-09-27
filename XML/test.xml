@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mapper namespace="usermessage">
+    <!-- 插入用户私信消息 -->
+    <string id="add">
+        INSERT INTO tc_usermessage (Fid, Ftitle, Fcontext, Fsenduid, Freceiveuid, readflg, Fdeleteflg, Fcreatetime) 
+        VALUES (
+            NULL, 
+            #{title}, 
+            #{context},
+            #{senduid},
+            #{receiveuid},
+            0,
+            0,
+            unix_timestamp()
+        )
+    </string>
+</mapper>

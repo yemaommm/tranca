@@ -1,0 +1,4 @@
+.vscode
+*.log
+upload/*
+*.pyc

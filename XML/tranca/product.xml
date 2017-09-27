@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mapper namespace="tranca.product">
+
+    <string id="findAllList">
+        SELECT * FROM product WHERE del = 0 %s ORDER BY createtime DESC LIMIT ?, ?
+    </string>
+
+</mapper>

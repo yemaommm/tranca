@@ -1,0 +1,54 @@
+{% extends "tranca/admin/base/base.html" %}
+
+{% block body %}
+<style>
+    .form-group{padding: 20px;}
+</style>
+<div>
+    <div class="page-header"><h1>微信设置</h1></div>
+    <form action="" method="post">
+        <div style="margin-bottom: 20px;">
+            <button type="submit" class="btn btn-primary" >保存</button>
+        </div>
+        <div style="width: 90%;">
+            <div class="form-group">
+                <label for="firstname" class="col-sm-3 control-label">Appid：</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="appid"
+                    value="{{ weixin.appid }}" placeholder="" unrequired>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-3 control-label">Mchid（支付）：</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="mchid"
+                    value="{{ weixin.mchid }}" placeholder="" unrequired>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-3 control-label">Key（支付）：</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="key"
+                    value="{{ weixin.key }}" placeholder="" unrequired>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-3 control-label">AppSecret：</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="appsecret"
+                    value="{{ weixin.appsecret }}" placeholder="" unrequired>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+            
+<script type="text/javascript">
+    page = "weixin";
+    pclass = "weixinindex";
+
+    start = function(){
+    }
+</script>
+{% endblock %}

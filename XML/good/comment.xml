@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mapper namespace="comment">
+    <string id="findlist">
+    	SELECT 
+			b.headimgurl, b.nickname, a.info
+		FROM i_wap_comment a 
+		LEFT JOIN i_wap_user b ON a.uid = b.id
+		WHERE a.status != 2 AND a.activityid = ?
+		ORDER BY a.createtime DESC
+		LIMIT ?, ?
+    </string>
+
+    <string id="adminlist">
+    	SELECT 
+			a.id, a.info, a.status,
+			FROM_UNIXTIME(a.createtime) AS createtime,
+			b.nickname, b.headimgurl,
+			c.name AS goodsname,
+			c.imgurl AS goodsimg
+		FROM i_wap_comment a 
+		LEFT JOIN i_wap_user b ON a.uid = b.id
+		LEFT JOIN i_goods_activity c ON c.id = a.activityid
+		ORDER BY a.createtime DESC
+		LIMIT ?, ?
+    </string>
+</mapper>

@@ -1,0 +1,131 @@
+{% extends "tranca/admin/base/base.html" %}
+
+{% block body %}
+<div>
+    <div class="page-header"><h1>用户管理</h1></div>
+    <div style="margin-bottom: 20px;width: 500px;display: none;" class="form-horizontal searchdiv">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">用户名：</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="searchusername" >
+            </div>
+        </div>
+        <input type="button" class="btn btn-primary searchbutton" value="搜索">
+        <script src="//cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+        <script>
+            // $('#searchphone').val($.cookie("user:searchphone"));
+            $('#searchusername').val($.cookie("user:searchusername"));
+            // $('#searchname').val($.cookie("user:searchname"));
+            // $('#searchstatus').val($.cookie("user:searchstatus"));
+            // $('#searchorderstatus').val($.cookie("user:searchorderstatus"));
+            $('.searchbutton').click(function(event) {
+                // $.cookie("user:searchname", $('#searchname').val());
+                // $.cookie("user:searchstatus", $('#searchstatus').val());
+                // $.cookie("user:searchphone", $('#searchphone').val());
+                $.cookie("user:searchusername", $('#searchusername').val());
+                // $.cookie("user:searchorderstatus", $('#searchorderstatus').val());
+
+                window.location.href = window.location.href.split("?")[0];
+            });
+            function clearsearch(){
+                // $.cookie("user:searchphone", "");
+                $.cookie("user:searchusername", "");
+                // $.cookie("user:searchname", "");
+                // $.cookie("user:searchstatus", "-1");
+                // $.cookie("user:searchorderstatus", "-1");
+
+                window.location.href = window.location.href.split('?')[0];
+            }
+        </script>
+    </div>
+    <div style="margin-bottom: 20px;">
+        <button type="button" onclick="$('.searchdiv').slideToggle()" class="btn btn-primary" >搜索栏</button>
+        <button type="button" onclick="clearsearch();" class="btn btn-primary" >全部用户</button>
+        <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">添加用户</button> -->
+        <!-- <button type="button adduser" class="btn btn-primary" data-toggle="modal" data-target="#addusermodel" >添加用户</button> -->
+    </div>
+    <div>
+        <table class="table table-bordered table-hover">
+           <thead>
+              <tr>
+                <th style="width: 70px;">用户ID</th>
+                 <th>用户名</th>
+                 <th>注册时间</th>
+                 <th>操作</th>
+              </tr>
+           </thead>
+           <tbody>
+            {% for j in userlist %}
+              <tr>
+                <td>{{ j.uid }}</td>
+                 <td>{{ j.username }}</td>
+                 <td>{{ todate(j.createtime) }}</td>
+                 <td width="250">
+                     <button class="btn btn-info updatepwd" user="{{ j.username }}" link="/admin/wapuser/updatepwd/{{ j.uid }}">修改密码</button>
+                 </td>
+              </tr>
+            {% endfor %}
+           </tbody>
+        </table>
+    </div>
+    <div id="mypage"></div>
+</div>
+
+            <form class="form-horizontal" id="updateform" role="form" action="" method="post" runat="server">
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="update" tabindex="-1" role="dialog" 
+   aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" 
+               data-dismiss="modal" aria-hidden="true">
+                  &times;
+            </button>
+            <h4 class="modal-title" id="uLabel">
+               修改密码
+            </h4>
+         </div>
+         <div class="modal-body">
+               <div class="form-group">
+                  <label for="firstname" class="col-sm-3 control-label">用户名：</label>
+                  <div class="col-sm-9">
+                     <input type="text" class="form-control" id="username"  readonly="readonly" required >
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label for="firstname" class="col-sm-3 control-label">密码：</label>
+                  <div class="col-sm-9">
+                     <input type="text" class="form-control" id="password" name="password" required >
+                  </div>
+               </div>
+         </div>
+         <div class="modal-footer">
+         	<input type="submit" class="btn btn-info" value="修改密码">
+            <button type="button" class="btn btn-default" 
+               data-dismiss="modal">关闭
+            </button>
+         </div>
+      </div><!-- /.modal-content -->
+    </div>
+</div><!-- /.modal -->
+        </form>
+
+</div>
+
+<script type="text/javascript">
+    page = "tranca";
+    pclass = "tranca_user_list";
+
+    start = function(){
+        
+        $('.updatepwd').click(function(){
+        	console.log(this)
+        	$('#username').val($(this).attr("user"));
+        	$('#updateform').attr('action', $(this).attr("link"));
+        	$('#update').modal();
+        });
+        ipage.create('#mypage', {{ total }}, {{ size }});
+    }
+</script>
+{% endblock %}

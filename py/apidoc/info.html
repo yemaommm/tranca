@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,height=device-height, user-scalable=no,initial-scale=1, minimum-scale=1, maximum-scale=1">
+   <title>API说明</title>
+   <link href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+   <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+   <script src="http://libs.baidu.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+</head>
+<body style="max-width: 1000px;margin: auto;">
+<div style="width: 100%;height: 60px;">
+    <div style="margin: auto;float: right;margin-top: 20px;">
+        {% for i in indexlist %}
+            <a href="?version={{ i }}" class="btn btn-default" {% if i == version %}style="background: #BDDBF9;"{% end %}>{{ i }}</a>
+        {% end %}
+    </div>
+</div>
+
+<div style="position: fixed;top: 20px;left: 20px;">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">测试工具</button>
+</div>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" 
+   aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog" style="width: 80%;">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" 
+               data-dismiss="modal" aria-hidden="true">
+                  &times;
+            </button>
+            <h4 class="modal-title" id="myModalLabel">
+               测试工具
+            </h4>
+         </div>
+         <div class="modal-body">
+            <div class="input-group">
+                <span class="input-group-addon">url</span>
+                <input type="text" class="form-control" placeholder="请输入接口地址" id="url">
+            </div>
+            <div>参数：</div>
+            <div style="width: 49%;float: left;height: 250px;">
+                <textarea id="postdata" name="" class="form-control" id="" cols="30" rows="10" style="resize: none;width: 100%;height: 250px;" placeholder="get例子：a=b&b=c;"></textarea>
+            </div>
+            <div style="width: 49%;float: right;height: 250px;">
+                <pre id="text" style="width: 100%;height: 250px;overflow: auto;"></pre>
+            </div>
+            <div>
+                <button class="btn example-btn" id="param">格式化参数JSON</button>
+                <button class="btn example-btn" id="get">GET</button>
+                <button class="btn example-btn" id="post">POST</button>
+                <button class="btn example-btn" id="json">JSON</button>
+                <button class="btn example-btn" id="xml">XML</button>
+            </div>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-default" 
+               data-dismiss="modal">关闭
+            </button>
+         </div>
+      </div><!-- /.modal-content -->
+    </div>
+</div><!-- /.modal -->
+
+ <script>
+var XMLHttpReq;  
+function createXMLHttpRequest() {  
+    try {  
+        XMLHttpReq = new ActiveXObject("Msxml2.XMLHTTP");//IE高版本创建XMLHTTP  
+    }  
+    catch(E) {  
+        try {  
+            XMLHttpReq = new ActiveXObject("Microsoft.XMLHTTP");//IE低版本创建XMLHTTP  
+        }  
+        catch(E) {  
+            XMLHttpReq = new XMLHttpRequest();//兼容非IE浏览器，直接创建XMLHTTP对象  
+        }  
+    }  
+  
+}
+createXMLHttpRequest();
+ $('#param').click(function(){
+    $('#text').html(jsformat($('#postdata').val()))
+ });
+ $('#get').click(function(){
+    sdata = ''
+    try{
+        sdata = eval('(' + $("#postdata").val() + ')');
+    }catch (e){
+        sdata = $("#postdata").val();
+    }
+    $.ajax({
+        url: $("#url").val(),
+        type: "get",
+        data: sdata,
+        dataType: "text",
+        success: function(data){
+            if(typeof(data)=='object'){
+                $("#text").html(jsformat(JSON.stringify(data)));
+            }else{
+                $("#text").html(jsformat(data));
+            }
+        },
+        error: function(){
+            $("#text").html('error:0');
+        }
+    });
+ });
+ $('#post').click(function(){
+    sdata = ''
+    try{
+        sdata = eval('(' + $("#postdata").val() + ')');
+    }catch (e){
+        sdata = $("#postdata").val();
+    }
+    $.ajax({
+        url: $("#url").val(),
+        type: "post",
+        data: sdata,
+        dataType: "text",
+        success: function(data){
+            if(typeof(data)=='object'){
+                $("#text").html(jsformat(JSON.stringify(data)));
+            }else{
+                $("#text").html(jsformat(data));
+            }
+        },
+        error: function(){
+            $("#text").html('error:0');
+        }
+    });
+ });
+ $('#json').click(function(){
+    XMLHttpReq.open("post", $("#url").val(), true);  
+    XMLHttpReq.onreadystatechange = function(){
+        if (XMLHttpReq.readyState == 4) {  
+            if (XMLHttpReq.status == 200) {  
+                var text = XMLHttpReq.responseText;  
+                $("#text").html(jsformat(text));
+            }  
+        }else{
+            $("#text").html('error:0');
+        }
+    }; //指定响应函数  
+    XMLHttpReq.send($("#postdata").val());
+ });
+ $('#xml').click(function(){
+    XMLHttpReq.open("post", $("#url").val(), true);  
+    XMLHttpReq.onreadystatechange = function(){
+        if (XMLHttpReq.readyState == 4) {  
+            if (XMLHttpReq.status == 200) {  
+                var text = XMLHttpReq.responseText;  
+                $("#text").html(jsformat(text));
+            }  
+        }else{
+            $("#text").html('error:0');
+        }
+    }; //指定响应函数  
+    XMLHttpReq.send($("#postdata").val());
+ });
+ </script>
+
+{%set n=1 %}
+<div style="width:23%;float: left;left: 20px;position: fixed;">
+    <ul class="nav nav-pills nav-stacked" style="overflow: auto;" id="myTab"> 
+        {% for i in list %}
+            {%set n=n+1 %}
+            <li><a class="bb" href="#a{{ n }}" dis="a" >
+                {{i['apiname'][0]}}
+            </a></li> 
+        {% end %}
+    </ul> 
+    <a class="btn btn-primary" style="display: block;height: 40px;line-height: 40px;width: 100%;text-align: 40px;" href="/apidoc/?version={{ version }}">返回</a>
+</div>
+{%set n=1 %}
+<div class="tab-content" style="width:73%;margin-bottom: 50px;margin-left: 26%;"> 
+{% for d in list %}
+    {%set n=n+1 %}
+    <div class="tab-pane" style="display: block;align:right;" id="a{{ n }}">
+        <div style="">
+            <div style="width: 100%">
+                <b>所属文件</b>
+            </div>
+            <div class="alert alert-success">
+                {{ d['filepath'] }}
+            </div>
+        </div>
+        <div style="">
+            <div style="width: 100%">
+                <b>接口名</b>
+            </div>
+            <div class="alert alert-success">
+                {{ d['apiname'][0] }}
+            </div>
+        </div>
+            <div style="width: 100%">
+                <b>接口版本</b>
+            </div>
+            <div class="alert alert-info">
+                <span style="color:red;">当前：{{ version }}</span>
+            </div>
+            <div style="width: 100%">
+                <b>接口描述</b>
+            </div>
+            <div class="alert alert-info">
+                
+            </div>
+            <div style="width: 100%">
+                <b>请求类型及路径</b>
+            </div>
+            <div class="alert alert-info">
+                {{ d['api'][0][1] }}
+            </div>
+            <div style="width: 100%">
+                <b>请求示例</b>
+            </div>
+            <div class="alert alert-info">
+                【{{ d['api'][0][0] }}】{{ d['apiSampleRequest'][0] }}
+            </div>
+                <div>
+                    <table class="table table-hover">
+                        <caption><b>参数说明</b></caption>
+                        <thead>
+                          <tr>
+                             <th>参数名称</th>
+                             <th>参数说明</th>
+                             <th>备注</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in d['apiparams'] %}
+                                <tr>
+                                    <td>{{ d['apiparams'][i][1] }}</td>
+                                    <td>{{ d['apiparams'][i][2] }}</td>
+                                    <td>{{ d['apiparams'][i][0] }}</td>
+                                </tr>
+                            {% end %}
+                        </tbody>
+                    </table>
+                </div>
+                <div style="width: 100%">
+                <b>返回</b>
+            </div>
+            <div class="alert alert-info">
+                <pre>{{ ''.join(d['apiexapmple'][1].split('*')).split('@api')[0] }}</pre>
+            </div>
+                {% for i in d['apireturn'] %}
+                <div>
+                    <table class="table table-hover">
+                        <caption><b>返回值代码({{ i }})</b></caption>
+                        <thead>
+                          <tr>
+                             <th>返回代码名称</th>
+                             <th>返回值</th>
+                             <th>返回代码说明</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for j in d['apireturn'][i] %}
+                                <tr>
+                                    <td>{{ j[2] }}</td>
+                                    <td>{{ j[3] }}</td>
+                                    <td>{{ j[1] }}</td>
+                                </tr>
+                            {% end %}
+                        </tbody>
+                    </table>
+                </div>
+                {% end %}
+            </div>
+{% end %}
+</div> 
+       
+<script> 
+$('#myTab').css('height', (window.screen.availHeight-300)+'px');
+//get参数获取
+function request(paras) {
+    var url = location.href;
+    var paraString = url.substring(url.indexOf("?") + 1, url.length).split("&");
+    var paraObj = {}
+    for (i = 0; j = paraString[i]; i++) {
+        paraObj[j.substring(0, j.indexOf("=")).toLowerCase()] = j.substring(j.indexOf("=") + 1, j.length);
+    }
+    var returnValue = paraObj[paras.toLowerCase()];
+    if (typeof (returnValue) == "undefined") {
+        return "";
+    } else {
+        //t=new String(returnValue.getBytes("ISO8859_1"),"UTF-8");
+        //return t;
+        return returnValue;
+    }
+}
+function jsformat(txt,compress/*是否为压缩模式*/){/* 格式化JSON源码(对象转换为JSON文本) */  
+    var indentChar = '  ';   
+    if(/^\s*$/.test(txt)){   
+        alert('数据为空,无法格式化! ');   
+        return;   
+    }   
+    try{var data=eval('('+txt+')');}   
+    catch(e){   
+        alert('数据源语法错误,格式化失败! 错误信息: '+e.description,'err');   
+        return;   
+    };   
+    var draw=[],last=false,This=this,line=compress?'':'\n',nodeCount=0,maxDepth=0;   
+       
+    var notify=function(name,value,isLast,indent/*缩进*/,formObj){   
+        nodeCount++;/*节点计数*/  
+        for (var i=0,tab='';i<indent;i++ )tab+=indentChar;/* 缩进HTML */  
+        tab=compress?'':tab;/*压缩模式忽略缩进*/  
+        maxDepth=++indent;/*缩进递增并记录*/  
+        if(value&&value.constructor==Array){/*处理数组*/  
+            draw.push(tab+(formObj?('"'+name+'":'):'')+'['+line);/*缩进'[' 然后换行*/  
+            for (var i=0;i<value.length;i++)   
+                notify(i,value[i],i==value.length-1,indent,false);   
+            draw.push(tab+']'+(isLast?line:(','+line)));/*缩进']'换行,若非尾元素则添加逗号*/  
+        }else   if(value&&typeof value=='object'){/*处理对象*/  
+                draw.push(tab+(formObj?('"'+name+'":'):'')+'{'+line);/*缩进'{' 然后换行*/  
+                var len=0,i=0;   
+                for(var key in value)len++;   
+                for(var key in value)notify(key,value[key],++i==len,indent,true);   
+                draw.push(tab+'}'+(isLast?line:(','+line)));/*缩进'}'换行,若非尾元素则添加逗号*/  
+            }else{   
+                    if(typeof value=='string')value='"'+value+'"';   
+                    draw.push(tab+(formObj?('"'+name+'":'):'')+value+(isLast?'':',')+line);   
+            };   
+    };   
+    var isLast=true,indent=0;   
+    notify('',data,isLast,indent,false);   
+    return draw.join('');   
+}  
+
+
+// pre = document.getElementsByTagName('pre');
+// for(i=0;i<pre.length;i++){
+//     try{
+//         // alert(pre[i].innerHTML)
+//         pre[i].innerHTML = jsformat(pre[i].innerHTML);
+//     }catch(e){alert(e)}
+// }
+</script>
+
+</body>
+</html>

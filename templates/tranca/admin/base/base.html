@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/favicon.png">
+    <title>{{ conf.app.admin_name }}</title>
+    <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Bootstrap core CSS -->
+    <link href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="/admin/css/dashboard.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]>
+    <script src='//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js'></script>
+    <script src='//cdn.bootcss.com/respond.js/1.4.2/respond.min.js'></script>
+    <script src='/admin/assets/js/ie8-responsive-file-warning.js'></script>
+    <style type="text/css">
+        .cmenu{display: block;position: absolute;top: 0px;right: 80px;}
+        .cmenu li{float: left;}
+        .nmenu{width:20%;}
+        .main{width: 80%;left: 20%;}
+    </style>
+    <![endif]-->
+  </head>
+<style type="text/css">
+.shop{display:none;}
+.qrcode{display:none;}
+.distributor{display:none;}
+.weixin{display:none;}
+.system{display:none;}
+.navbar-fixed-bottom, .navbar-fixed-top {
+    position: fixed;
+    right: 0;
+    left: 0;
+    z-index: 9;
+}
+</style>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">{{ conf.app.admin_name }}</a>
+        </div>
+        <div class="navbar-collapse collapse cmenu">
+          <ul class="nav navbar-nav navbar-right">
+            <li class="active imenu" plink="#navbar" p="tranca"><a href="#">tranca</a></li>
+            <!-- <li class="active imenu" plink="#navbar" p="toppage"><a href="#">官网</a></li> -->
+            <!-- <li class="imenu" plink="#navbar" p="shop" id="shopl" ><a href="#">商城管理</a></li> -->
+            <!-- <li class="imenu" plink="#navbar" p="qrcode" id="qrcodel" ><a href="#">二维码管理</a></li>
+            <li class="imenu" plink="#navbar" p="distributor" id="distributorl" ><a href="#">分销商管理</a></li> -->
+            <li class="imenu" plink="#navbar" p="weixin" id="weixinl" ><a href="#">公众号管理</a></li>
+            <!-- <li class="imenu" plink="#navbar" p="system" id="systeml" ><a href="#">系统设置</a></li> -->
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar panel-group nmenu"  id="navbar" style="" >
+            {% include "tranca/admin/base/tranca.html" %}
+            {% include "tranca/admin/base/weixinlist.html" %}
+        </div>
+
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="mbody" style="">
+            {% if req.FormValue("msg") %}
+                <div class="alert alert-warning">  <!-- alert-success   alert-warning -->
+                   <a href="#" class="close" data-dismiss="alert" aria-hidden="true">
+                      &times;
+                   </a>
+                   <strong>{{ req.FormValue("msg") }}！</strong>
+                </div>
+            {% endif %}
+            {% block body %}nill{% endblock %}
+        </div>
+      </div>
+    </div>
+    
+    <!-- 模态框（Modal） -->
+<div class="modal fade" id="bootAlert" tabindex="-1" role="dialog" 
+   aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" 
+               data-dismiss="modal" aria-hidden="true">
+                  &times;
+            </button>
+            <h4 class="modal-title" id="bootAlertLabel">
+               消息
+            </h4>
+         </div>
+         <div class="modal-body" id="bootAlertBody">
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-default" 
+               data-dismiss="modal">关闭
+            </button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal">
+               确认
+            </button>
+         </div>
+      </div><!-- /.modal-content -->
+  </div><!-- /.modal -->
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <script src="/admin/assets/js/ie-emulation-modes-warning.js"></script>
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+    <script src="/admin/assets/js/vendor/holder.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/admin/assets/js/ie10-viewport-bug-workaround.js"></script>
+    <script src="/admin/js/public.js"></script>
+    <script type="text/javascript">
+    function bAlert(data){
+        $('#bootAlertBody').html(data);
+        $('#bootAlert').modal();
+    }
+    $(document).ready(function(){
+        // palert.link('/admin/shoplist', '#navbar');
+        $('.imenu').click(function(){
+            $('.imenu').attr('class', 'imenu');
+            $(this).attr('class', 'imenu active');
+
+            var imenu = document.getElementsByClassName('imenu');
+            for(i=0;i<imenu.length;i++){
+                $("."+$(imenu[i]).attr('p')).css('display', 'none');
+            }
+            // $(".shop").css('display', 'none');
+            // $(".qrcode").css('display', 'none');
+            // $(".distributor").css('display', 'none');
+            // $(".weixin").css('display', 'none');
+            // $(".system").css('display', 'none');
+            $("."+$(this).attr('p')).css('display', 'block');
+        });
+        try{
+            $("#"+page+"l").click();
+            $("#"+pclass).attr('class', 'active');
+            $("#"+pclass).parent().addClass("in");
+        }catch(e){}
+        try{
+            start();
+        }catch(e){}
+
+    });
+    </script>
+    <!-- <script type="text/javascript" src="https://select2.github.io/dist/js/select2.min.js"></script>
+    <link href="https://select2.github.io/dist/css/select2.min.css" type="text/css" rel="stylesheet" />
+    <style>.select2-search__field{height:30px;}</style>
+    <script>$("select").select2();</script> -->
+  </body>
+</html>
